@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 
-import {ExtractElementByType, Route, RootContainer} from './types';
+import { ExtractElementByType, Route, RootContainer } from "./types";
 
-type ScreenContainer = ExtractElementByType<'screen'>;
+type ScreenContainer = ExtractElementByType<"screen">;
 
 const NavigationContext = React.createContext({
   push: (() => {}) as (routeName: string, routeParams?: any) => void,
@@ -11,14 +11,17 @@ const NavigationContext = React.createContext({
   stack: [] as Route[],
 });
 
-export function RootView(props: {containerInfo: RootContainer; children?: React.ReactNode}) {
+export function RootView(props: {
+  containerInfo: RootContainer;
+  children?: React.ReactNode;
+}) {
   const [stack, setStack] = React.useState<Route[]>([]);
   const screens = React.useRef<ScreenContainer[]>([]);
 
   const push = React.useCallback(
     (routeName: string, params?: any) => {
-      setStack(prev => {
-        const screen = screens.current.find(({name}) => name === routeName);
+      setStack((prev) => {
+        const screen = screens.current.find(({ name }) => name === routeName);
 
         if (!screen) {
           console.log(`Cannot navigatie to ${routeName}: Route does not exist`);
@@ -40,11 +43,11 @@ export function RootView(props: {containerInfo: RootContainer; children?: React.
         return newState;
       });
     },
-    [props.containerInfo],
+    [props.containerInfo]
   );
 
   const pop = React.useCallback(() => {
-    setStack(prev => {
+    setStack((prev) => {
       if (prev.length === 1) {
         return prev;
       }
@@ -59,11 +62,11 @@ export function RootView(props: {containerInfo: RootContainer; children?: React.
     (screen: ScreenContainer) => {
       screens.current.push(screen);
 
-      if (screen.name === 'root') {
-        push('root');
+      if (screen.name === "root") {
+        push("root");
       }
     },
-    [push],
+    [push]
   );
 
   const navigationContextValue = React.useMemo(() => {
@@ -75,18 +78,30 @@ export function RootView(props: {containerInfo: RootContainer; children?: React.
     };
   }, [push, pop, registerScreen, stack]);
 
-  return <NavigationContext.Provider value={navigationContextValue}>{props.children}</NavigationContext.Provider>;
+  return (
+    <NavigationContext.Provider value={navigationContextValue}>
+      {props.children}
+    </NavigationContext.Provider>
+  );
 }
 
 export const useCarNavigation = () => React.useContext(NavigationContext);
 
-export const Screen = React.memo(function Screen({name, render}: {name: string; render: ScreenContainer['render']}) {
+export const Screen = React.memo(function Screen({
+  name,
+  render,
+}: {
+  name: string;
+  render: ScreenContainer["render"];
+}) {
+  console.log("AndroidAuto: Screen rendering");
+
   const navigation = useCarNavigation();
   React.useEffect(() => {
     navigation.registerScreen({
       name,
       render,
-      type: 'screen',
+      type: "screen",
     } as any);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -94,14 +109,24 @@ export const Screen = React.memo(function Screen({name, render}: {name: string; 
   return null;
 });
 
-export const ScreenManager = React.memo(function ScreenManager({children}: {children: any}) {
-  const {stack} = useCarNavigation();
+export const ScreenManager = React.memo(function ScreenManager({
+  children,
+}: {
+  children: any;
+}) {
+  console.log("AndroidAuto: Screen Manager rendering");
+
+  const { stack } = useCarNavigation();
 
   return (
     <>
       {children}
-      {stack.map(({render, routeParams, ...item}) => {
-        return React.createElement('screen', item, render && React.createElement(render, {routeParams} as any));
+      {stack.map(({ render, routeParams, ...item }) => {
+        return React.createElement(
+          "screen",
+          item,
+          render && React.createElement(render, { routeParams } as any)
+        );
       })}
     </>
   );

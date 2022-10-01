@@ -17,7 +17,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.modules.appregistry.AppRegistry;
-import com.facebook.react.modules.core.Timing;
+import com.facebook.react.modules.core.TimingModule;
 import com.google.android.libraries.car.app.CarAppService;
 import com.google.android.libraries.car.app.Screen;
 import com.shopify.rnandroidauto.AndroidAutoModule;
@@ -120,7 +120,7 @@ public final class CarService extends CarAppService {
             }
 
             catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
-            Timing timingModule = reactContext.getNativeModule(Timing.class);
+            TimingModule timingModule = reactContext.getNativeModule(TimingModule.class);
 
             AndroidAutoModule carModule = mReactInstanceManager
                     .getCurrentReactContext()

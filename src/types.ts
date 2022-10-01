@@ -1,14 +1,21 @@
-type HeaderAction = 'back' | 'app_icon';
-type CarColor = 'blue' | 'green' | 'primary' | 'red' | 'secondary' | 'yellow' | 'default';
+type HeaderAction = "back" | "app_icon";
+type CarColor =
+  | "blue"
+  | "green"
+  | "primary"
+  | "red"
+  | "secondary"
+  | "yellow"
+  | "default";
 
 interface PlaceMetadata {
-  type: 'place';
+  type: "place";
   latitude: number;
   longitude: number;
 }
 
 interface ActionStrip {
-  actions: Omit<Action, 'type'>[];
+  actions: Omit<Action, "type">[];
 }
 
 type Metadata = PlaceMetadata;
@@ -18,14 +25,14 @@ interface CommonAttributes {
 }
 
 interface Action extends CommonAttributes {
-  type: 'action';
+  type: "action";
   title: string;
   backgroundColor?: CarColor;
   onPress?: (event: {}) => any;
 }
 
 interface Row extends CommonAttributes {
-  type: 'row';
+  type: "row";
   title: string;
   texts?: string[];
   onPress?: (event: {}) => any;
@@ -33,13 +40,13 @@ interface Row extends CommonAttributes {
 }
 
 interface ItemList extends CommonAttributes {
-  type: 'item-list';
+  type: "item-list";
   header: string;
   children: Row[];
 }
 
 interface ListTemplate extends CommonAttributes {
-  type: 'list-template';
+  type: "list-template";
   title: string;
   headerAction?: HeaderAction;
   isLoading?: boolean;
@@ -48,7 +55,7 @@ interface ListTemplate extends CommonAttributes {
 }
 
 interface PlaceListMapTemplate extends CommonAttributes {
-  type: 'place-list-map-template';
+  type: "place-list-map-template";
   title: string;
   headerAction?: HeaderAction;
   isLoading?: boolean;
@@ -57,7 +64,7 @@ interface PlaceListMapTemplate extends CommonAttributes {
 }
 
 interface PaneTemplate extends CommonAttributes {
-  type: 'pane-template';
+  type: "pane-template";
   title: string;
   headerAction?: HeaderAction;
   actionStrip?: ActionStrip;
@@ -65,29 +72,39 @@ interface PaneTemplate extends CommonAttributes {
 }
 
 interface Screen extends CommonAttributes {
-  type: 'screen';
+  type: "screen";
   name: string;
   render: (props?: any) => React.ReactElement<AndroidAutoTemplate>;
   children: AndroidAutoTemplate[] | AndroidAutoTemplate;
 }
 
 interface ScreenManager extends CommonAttributes {
-  type: 'screen-manager';
+  type: "screen-manager";
   children: Screen[];
 }
 
-export type AndroidAutoTemplate = PaneTemplate | ListTemplate | PlaceListMapTemplate;
+export type AndroidAutoTemplate =
+  | PaneTemplate
+  | ListTemplate
+  | PlaceListMapTemplate;
 
-export type ExtractElementByType<Type extends AndroidAutoElement['type']> = Extract<AndroidAutoElement, {type: Type}>;
-export type AndroidAutoElement = AndroidAutoTemplate | Row | ItemList | ScreenManager | Screen | Action;
-export type ElementType = AndroidAutoElement['type'];
+export type ExtractElementByType<Type extends AndroidAutoElement["type"]> =
+  Extract<AndroidAutoElement, { type: Type }>;
+export type AndroidAutoElement =
+  | AndroidAutoTemplate
+  | Row
+  | ItemList
+  | ScreenManager
+  | Screen
+  | Action;
+export type ElementType = AndroidAutoElement["type"];
 export interface Route {
   name: string;
   routeParams?: any;
   render?: React.FC;
 }
 export interface RootContainer {
-  type: 'root-container';
+  type: "root-container";
   stack: Route[];
   prevStack: Route[];
   children?: AndroidAutoElement[];

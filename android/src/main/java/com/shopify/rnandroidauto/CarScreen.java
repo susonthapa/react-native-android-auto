@@ -31,6 +31,6 @@ public class CarScreen extends Screen {
 
         return PaneTemplate.builder(
                 Pane.builder().setIsLoading(true).build()
-        ).setTitle("Shopify Local Delivery").build();
+        ).setTitle("Loading...").build();
     }
 }

@@ -1,7 +1,7 @@
-import {debounce, cloneDeepWith} from 'lodash';
-import {NativeEventEmitter, NativeModules} from 'react-native';
+import { debounce, cloneDeepWith } from "lodash";
+import { NativeEventEmitter, NativeModules } from "react-native";
 
-import {AndroidAutoTemplate} from './types';
+import { AndroidAutoTemplate } from "./types";
 
 const invalidate = debounce((screenName: string) => {
   NativeModules.CarModule.invalidate(screenName);
@@ -14,7 +14,7 @@ function prepareTemplate(name: string, template: AndroidAutoTemplate) {
   const callbacks = new Map<number, Function>();
 
   const templateClone = cloneDeepWith(template, (value: any) => {
-    if (typeof value === 'function') {
+    if (typeof value === "function") {
       currentIndex++;
       callbacks.set(currentIndex, value);
       return currentIndex;
@@ -23,10 +23,10 @@ function prepareTemplate(name: string, template: AndroidAutoTemplate) {
     return undefined;
   });
 
-  const callbackFromNative = ({id, ...event}) => {
+  const callbackFromNative = ({ id, ...event }) => {
     NativeModules.CarModule.setEventCallback(name, callbackFromNative);
     const callback = callbacks.get(id);
-    
+
     if (callback) {
       callback(event);
     }
