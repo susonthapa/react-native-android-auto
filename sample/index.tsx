@@ -12,4 +12,4 @@ AppRegistry.registerRunnable('androidAuto', () => {
   render(React.createElement(RootApp));
 });
 
-AppRegistry.registerComponent('androidAutoExample', () => App);
+AppRegistry.registerComponent('AndroidAutoExample', () => App);

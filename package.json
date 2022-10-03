@@ -6,7 +6,7 @@
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc --build",
+    "build": "bob build",
     "prettier": "prettier -w .",
     "prepublish": "npm run build"
   },
@@ -37,9 +37,20 @@
     "@types/lodash": "^4.14.186",
     "@types/react": "17.0.2",
     "@types/react-native": "^0.67.4",
+    "@types/react-reconciler": "^0.18.0",
     "prettier": "^2.1.2",
     "react": "17.0.2",
     "react-native": "0.67.4",
+    "react-native-builder-bob": "^0.18.3",
     "typescript": "^4.8.4"
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      "typescript"
+    ]
   }
 }

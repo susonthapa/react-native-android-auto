@@ -13,7 +13,8 @@ type Container = RootContainer | AndroidAutoElement;
 
 type ScreenContainer = ExtractElementByType<"screen">;
 
-function applyProps(instance: object, allProps: object) {
+// TODO(fix types)
+function applyProps(instance: any, allProps: any) {
   for (const [key, value] of Object.entries(allProps)) {
     if (key !== "children") {
       instance[key] = value;
@@ -260,7 +261,8 @@ export function render(element: React.ReactNode) {
     console.log("Initializing AndroidAuto module");
     AndroidAutoModule.init();
 
-    Renderer.updateContainer(element, root, null, () => {
+    // TODO(fix the cast)
+    Renderer.updateContainer(element as any, root, null, () => {
       AndroidAutoModule.invalidate("root");
     });
 
@@ -269,7 +271,7 @@ export function render(element: React.ReactNode) {
 
   AndroidAutoModule.eventEmitter.addListener("android_auto:ready", () => {
     console.log("CarContext: Ready");
-    const initialStack = [];
+    const initialStack: any[] = [];
     const containerInfo = {
       type: "root-container",
       stack: initialStack,
