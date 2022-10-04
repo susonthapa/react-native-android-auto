@@ -8,6 +8,7 @@ import {
   RootContainer,
 } from "./types";
 import { RootView } from "./AndroidAutoReact";
+import { NativeEventEmitter, NativeModules } from "react-native";
 
 type Container = RootContainer | AndroidAutoElement;
 
@@ -269,6 +270,25 @@ export function render(element: React.ReactNode) {
     Renderer.getPublicRootInstance(root);
   }
 
+  // setTimeout(() => {
+  //   console.log("CarContext: Ready");
+  //   const initialStack: any[] = [];
+  //   const containerInfo = {
+  //     type: "root-container",
+  //     stack: initialStack,
+  //     prevStack: initialStack,
+  //   } as RootContainer;
+
+  //   callReconciler(
+  //     React.createElement(RootView, { containerInfo }, element),
+  //     containerInfo
+  //   );
+  // }, 5000)
+
+  (new NativeEventEmitter(NativeModules.CarModule)).addListener("autoTesting", () => {
+    console.log(`TODO: got event from native side autoTesting`);
+  })
+  
   AndroidAutoModule.eventEmitter.addListener("android_auto:ready", () => {
     console.log("CarContext: Ready");
     const initialStack: any[] = [];
@@ -283,4 +303,6 @@ export function render(element: React.ReactNode) {
       containerInfo
     );
   });
+
+  console.log(`TODO: setup the eventEmitter`);
 }

@@ -28,6 +28,8 @@ const Main = () => {
 };
 
 const RootApp = () => {
+  console.log(`TODO: RootApp Render`);
+  
   return (
     <ScreenManager>
       <Screen name="root" render={Main} />

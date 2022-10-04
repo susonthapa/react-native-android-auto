@@ -5,7 +5,9 @@ import {
   StatusBar,
   StyleSheet,
   Text, useColorScheme,
-  View
+  View,
+  NativeEventEmitter,
+  NativeModules,
 } from 'react-native';
 
 import {
@@ -20,6 +22,11 @@ type SectionProps = {
   children: any,
   title: string,
 }
+
+const emitter = new NativeEventEmitter(NativeModules.Test);
+emitter.addListener('Testing', () => {
+  console.log('TODO: receiving testing events')
+});
 
 const Section: FC<SectionProps> = ({ children, title }) => {
   const isDarkMode = useColorScheme() === 'dark';
