@@ -1,11 +1,16 @@
 buildscript {
+  // Buildscript is evaluated before everything else so we can't use getExtOrDefault
+  def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['RnAndroidAuto_kotlinVersion']
+
   repositories {
       google()
       mavenCentral()
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.5.3'
+    classpath 'com.android.tools.build:gradle:3.5.4'
+    // noinspection DifferentKotlinGradleVersion
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
   }
 }
 
@@ -14,6 +19,7 @@ def isNewArchitectureEnabled() {
 }
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 if (isNewArchitectureEnabled()) {
   apply plugin: 'com.facebook.react'
@@ -121,6 +127,7 @@ repositories {
   }
 }
 
+def kotlin_version = getExtOrDefault('kotlinVersion')
 
 dependencies {
     //noinspection GradleDynamicVersion
@@ -128,6 +135,7 @@ dependencies {
   implementation "androidx.car.app:app-projected:1.1.0"
   implementation "androidx.car.app:app:1.1.0"
   implementation "androidx.activity:activity:1.5.1"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 // From node_modules
 }
 
