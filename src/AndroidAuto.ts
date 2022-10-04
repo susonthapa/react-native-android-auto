@@ -1,7 +1,7 @@
 import { debounce, cloneDeepWith } from "lodash";
 import { NativeEventEmitter, NativeModules } from "react-native";
 
-import { AndroidAutoTemplate } from "./types";
+import type { AndroidAutoTemplate } from "./types";
 
 const invalidate = debounce((screenName: string) => {
   NativeModules.CarModule.invalidate(screenName);
