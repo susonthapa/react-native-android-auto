@@ -1,6 +1,5 @@
-import React from "react";
-
-import { AndroidAutoElement, ExtractElementByType } from "./types";
+import type React from "react";
+import type { AndroidAutoElement, ExtractElementByType } from "./types";
 
 type NativeToJSXElement<Type extends AndroidAutoElement["type"]> = Omit<
   ExtractElementByType<Type>,

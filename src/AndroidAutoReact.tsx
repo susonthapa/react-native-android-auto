@@ -1,6 +1,6 @@
 import React from "react";
 
-import { ExtractElementByType, Route, RootContainer } from "./types";
+import type { ExtractElementByType, Route, RootContainer } from "./types";
 
 type ScreenContainer = ExtractElementByType<"screen">;
 

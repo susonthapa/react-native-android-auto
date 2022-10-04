@@ -2,7 +2,7 @@ import React from "react";
 import Reconciler from "react-reconciler";
 
 import { AndroidAutoModule } from "./AndroidAuto";
-import {
+import type {
   AndroidAutoElement,
   ExtractElementByType,
   RootContainer,
