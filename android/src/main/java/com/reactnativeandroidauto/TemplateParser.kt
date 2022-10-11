@@ -2,6 +2,7 @@ package com.reactnativeandroidauto
 
 import android.util.Log
 import androidx.car.app.model.*
+import androidx.car.app.navigation.model.NavigationTemplate
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableNativeMap
 
@@ -11,58 +12,11 @@ class TemplateParser internal constructor(private val reactCarRenderContext: Rea
       "list-template" -> parseListTemplateChildren(renderMap)
       "place-list-map-template" -> parsePlaceListMapTemplate(renderMap)
       "pane-template" -> parsePaneTemplate(renderMap)
+      "navigation-template" -> parseNavigationTemplate(renderMap)
       else -> PaneTemplate.Builder(
         Pane.Builder().setLoading(true).build()
       ).setTitle("Pane Template").build()
     }
-  }
-
-  private fun parsePaneTemplate(map: ReadableMap): PaneTemplate {
-    val paneBuilder = Pane.Builder()
-    val children = map.getArray("children")
-    val loading: Boolean = try {
-      map.getBoolean("isLoading")
-    } catch (e: Exception) {
-      children == null || children.size() == 0
-    }
-
-    paneBuilder.setLoading(loading)
-    val actions = mutableListOf<Action>()
-    if (!loading) {
-      for (i in 0 until children!!.size()) {
-        val child = children.getMap(i)
-        val type = child.getString("type")
-        Log.d("AUTO", "Adding child to row")
-        if (type == "row") {
-          paneBuilder.addRow(buildRow(child))
-        }
-        if (type == "action") {
-          actions.add(parseAction(child))
-        }
-      }
-      for (i in actions.indices) {
-        paneBuilder.addAction(actions[i])
-      }
-    }
-    val builder = PaneTemplate.Builder(paneBuilder.build())
-    val title = map.getString("title")
-    if (title == null || title.isEmpty()) {
-      builder.setTitle("<No Title>")
-    } else {
-      builder.setTitle(title)
-    }
-    try {
-      builder.setHeaderAction(getHeaderAction(map.getString("headerAction"))!!)
-    } catch (e: Exception) {
-      e.printStackTrace()
-    }
-    try {
-      val actionStripMap = map.getMap("actionStrip")
-      builder.setActionStrip(parseActionStrip(actionStripMap)!!)
-    } catch (e: Exception) {
-      e.printStackTrace()
-    }
-    return builder.build()
   }
 
   private fun parseActionStrip(map: ReadableMap?): ActionStrip? {
@@ -111,6 +65,61 @@ class TemplateParser internal constructor(private val reactCarRenderContext: Rea
       "default" -> CarColor.DEFAULT
       else -> CarColor.DEFAULT
     }
+  }
+
+  private fun parseNavigationTemplate(map: ReadableMap?): NavigationTemplate {
+    // TODO(parse the actions)
+    val panAction = Action.Builder().setTitle("Test").build()
+    val mapActionStrip = ActionStrip.Builder().addAction(panAction).build()
+    return NavigationTemplate.Builder().setActionStrip(mapActionStrip).build()
+  }
+
+  private fun parsePaneTemplate(map: ReadableMap): PaneTemplate {
+    val paneBuilder = Pane.Builder()
+    val children = map.getArray("children")
+    val loading: Boolean = try {
+      map.getBoolean("isLoading")
+    } catch (e: Exception) {
+      children == null || children.size() == 0
+    }
+
+    paneBuilder.setLoading(loading)
+    val actions = mutableListOf<Action>()
+    if (!loading) {
+      for (i in 0 until children!!.size()) {
+        val child = children.getMap(i)
+        val type = child.getString("type")
+        Log.d("AUTO", "Adding child to row")
+        if (type == "row") {
+          paneBuilder.addRow(buildRow(child))
+        }
+        if (type == "action") {
+          actions.add(parseAction(child))
+        }
+      }
+      for (i in actions.indices) {
+        paneBuilder.addAction(actions[i])
+      }
+    }
+    val builder = PaneTemplate.Builder(paneBuilder.build())
+    val title = map.getString("title")
+    if (title == null || title.isEmpty()) {
+      builder.setTitle("<No Title>")
+    } else {
+      builder.setTitle(title)
+    }
+    try {
+      builder.setHeaderAction(getHeaderAction(map.getString("headerAction"))!!)
+    } catch (e: Exception) {
+      e.printStackTrace()
+    }
+    try {
+      val actionStripMap = map.getMap("actionStrip")
+      builder.setActionStrip(parseActionStrip(actionStripMap)!!)
+    } catch (e: Exception) {
+      e.printStackTrace()
+    }
+    return builder.build()
   }
 
   private fun parsePlaceListMapTemplate(map: ReadableMap): PlaceListMapTemplate {

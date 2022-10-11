@@ -1,3 +1,5 @@
+import type React from "react";
+
 type HeaderAction = "back" | "app_icon";
 type CarColor =
   | "blue"
@@ -71,6 +73,12 @@ interface PaneTemplate extends CommonAttributes {
   children: ItemList[];
 }
 
+interface NavigationTemplate extends CommonAttributes {
+  type: "navigation-template",
+  id: string,
+  component: React.ComponentType<any>,
+}
+
 interface Screen extends CommonAttributes {
   type: "screen";
   name: string;
@@ -86,6 +94,7 @@ interface ScreenManager extends CommonAttributes {
 export type AndroidAutoTemplate =
   | PaneTemplate
   | ListTemplate
+  | NavigationTemplate
   | PlaceListMapTemplate;
 
 export type ExtractElementByType<Type extends AndroidAutoElement["type"]> =
