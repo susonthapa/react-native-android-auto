@@ -1,12 +1,17 @@
 package com.reactnativeandroidauto
 
 import android.util.Log
+import androidx.car.app.CarContext
 import androidx.car.app.model.*
 import androidx.car.app.navigation.model.NavigationTemplate
+import androidx.core.graphics.drawable.IconCompat
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableNativeMap
 
-class TemplateParser internal constructor(private val reactCarRenderContext: ReactCarRenderContext) {
+class TemplateParser internal constructor(
+  private val context: CarContext,
+  private val reactCarRenderContext: ReactCarRenderContext
+) {
   fun parseTemplate(renderMap: ReadableMap): Template {
     return when (renderMap.getString("type")) {
       "list-template" -> parseListTemplateChildren(renderMap)
@@ -37,7 +42,18 @@ class TemplateParser internal constructor(private val reactCarRenderContext: Rea
   private fun parseAction(map: ReadableMap?): Action {
     val builder = Action.Builder()
     if (map != null) {
-      builder.setTitle(map.getString("title")!!)
+      map.getString("title")?.let {
+        builder.setTitle(it)
+      }
+      map.getString("icon")?.let {
+        val id = context.resources.getIdentifier(it, "drawable", context.packageName)
+        if (id == 0) {
+          Log.w(TAG, "parseAction: failed to resolve icon with name: $it")
+        } else {
+          val icon = IconCompat.createWithResource(context, id)
+          builder.setIcon(CarIcon.Builder(icon).build())
+        }
+      }
       try {
         builder.setBackgroundColor(getColor(map.getString("backgroundColor")))
       } catch (e: Exception) {
@@ -67,11 +83,15 @@ class TemplateParser internal constructor(private val reactCarRenderContext: Rea
     }
   }
 
-  private fun parseNavigationTemplate(map: ReadableMap?): NavigationTemplate {
-    // TODO(parse the actions)
-    val panAction = Action.Builder().setTitle("Test").build()
-    val mapActionStrip = ActionStrip.Builder().addAction(panAction).build()
-    return NavigationTemplate.Builder().setActionStrip(mapActionStrip).build()
+  private fun parseNavigationTemplate(map: ReadableMap): NavigationTemplate {
+    val builder = NavigationTemplate.Builder()
+    try {
+      val actionStrip = parseActionStrip(map.getMap("actionStrip"))!!
+      builder.setActionStrip(actionStrip)
+    } catch (e: Exception) {
+      e.printStackTrace()
+    }
+    return builder.build()
   }
 
   private fun parsePaneTemplate(map: ReadableMap): PaneTemplate {
@@ -261,5 +281,9 @@ class TemplateParser internal constructor(private val reactCarRenderContext: Rea
     params.putInt("id", callbackId)
     params.putString("screen", reactCarRenderContext.screenMarker)
     reactCarRenderContext.eventCallback!!.invoke(params)
+  }
+
+  companion object {
+    const val TAG = "TemplateParser"
   }
 }

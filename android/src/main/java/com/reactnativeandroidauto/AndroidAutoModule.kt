@@ -139,7 +139,7 @@ class AndroidAutoModule internal constructor(private val reactContext: ReactAppl
     renderMap: ReadableMap,
     reactCarRenderContext: ReactCarRenderContext
   ): Template {
-    val templateParser = TemplateParser(reactCarRenderContext)
+    val templateParser = TemplateParser(carContext, reactCarRenderContext)
     return templateParser.parseTemplate(renderMap)
   }
 

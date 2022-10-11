@@ -28,7 +28,8 @@ interface CommonAttributes {
 
 interface Action extends CommonAttributes {
   type: "action";
-  title: string;
+  title?: string;
+  icon?: string;
   backgroundColor?: CarColor;
   onPress?: (event: {}) => any;
 }
@@ -76,6 +77,7 @@ interface PaneTemplate extends CommonAttributes {
 interface NavigationTemplate extends CommonAttributes {
   type: "navigation-template",
   id: string,
+  actionStrip: ActionStrip,
   component: React.ComponentType<any>,
 }
 
