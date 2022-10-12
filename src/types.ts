@@ -1,4 +1,5 @@
 import type React from "react";
+import type { ImageResolvedAssetSource } from "react-native";
 
 type HeaderAction = "back" | "app_icon";
 type CarColor =
@@ -29,7 +30,7 @@ interface CommonAttributes {
 interface Action extends CommonAttributes {
   type: "action";
   title?: string;
-  icon?: string;
+  icon?: ImageResolvedAssetSource;
   backgroundColor?: CarColor;
   onPress?: (event: {}) => any;
 }

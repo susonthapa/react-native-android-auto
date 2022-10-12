@@ -1,12 +1,19 @@
 package com.reactnativeandroidauto
 
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.car.app.CarContext
 import androidx.car.app.model.*
 import androidx.car.app.navigation.model.NavigationTemplate
 import androidx.core.graphics.drawable.IconCompat
+import com.facebook.common.references.CloseableReference
+import com.facebook.datasource.DataSources
+import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.imagepipeline.image.CloseableBitmap
+import com.facebook.imagepipeline.request.ImageRequestBuilder
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableNativeMap
+import com.facebook.react.views.imagehelper.ImageSource
 
 class TemplateParser internal constructor(
   private val context: CarContext,
@@ -39,20 +46,29 @@ class TemplateParser internal constructor(
     }
   }
 
+  private fun getBitmapFromSource(map: ReadableMap): Bitmap {
+    val source = ImageSource(context, map.getString("uri"))
+    val imageRequest = ImageRequestBuilder.newBuilderWithSource(source.uri).build()
+    val dataSource = Fresco.getImagePipeline().fetchDecodedImage(imageRequest, context)
+    val result = DataSources.waitForFinalResult(dataSource) as CloseableReference<CloseableBitmap>
+    val bitmap = result.get().underlyingBitmap
+
+    CloseableReference.closeSafely(result)
+    dataSource.close()
+
+    return bitmap
+  }
+
   private fun parseAction(map: ReadableMap?): Action {
     val builder = Action.Builder()
     if (map != null) {
       map.getString("title")?.let {
         builder.setTitle(it)
       }
-      map.getString("icon")?.let {
-        val id = context.resources.getIdentifier(it, "drawable", context.packageName)
-        if (id == 0) {
-          Log.w(TAG, "parseAction: failed to resolve icon with name: $it")
-        } else {
-          val icon = IconCompat.createWithResource(context, id)
-          builder.setIcon(CarIcon.Builder(icon).build())
-        }
+      map.getMap("icon")?.let {
+        val bitmap = getBitmapFromSource(it)
+        val icon = IconCompat.createWithBitmap(bitmap)
+        builder.setIcon(CarIcon.Builder(icon).build())
       }
       try {
         builder.setBackgroundColor(getColor(map.getString("backgroundColor")))
