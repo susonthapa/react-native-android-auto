@@ -21,6 +21,10 @@ interface ActionStrip {
   actions: Omit<Action, "type">[];
 }
 
+type MapActionStrip = {
+  actions: (Omit<Action, "type" | "title" | "icon"> & { icon: NonNullable<Action['icon']> })[],
+}
+
 type Metadata = PlaceMetadata;
 
 interface CommonAttributes {
@@ -79,6 +83,7 @@ interface NavigationTemplate extends CommonAttributes {
   type: "navigation-template",
   id: string,
   actionStrip: ActionStrip,
+  mapActionStrip?: MapActionStrip,
   component: React.ComponentType<any>,
 }
 

@@ -104,6 +104,10 @@ class TemplateParser internal constructor(
     try {
       val actionStrip = parseActionStrip(map.getMap("actionStrip"))!!
       builder.setActionStrip(actionStrip)
+      val mapActionStrip = map.getMap("mapActionStrip")
+      mapActionStrip?.let {
+        builder.setMapActionStrip(parseActionStrip(it)!!)
+      }
     } catch (e: Exception) {
       e.printStackTrace()
     }

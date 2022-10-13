@@ -8,6 +8,7 @@ import {
   View,
   NativeEventEmitter,
   NativeModules,
+  Image,
 } from 'react-native';
 
 import {
@@ -68,6 +69,7 @@ const App = () => {
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
         <Header />
+        <Image source={require('./images/click.png')} />
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
