@@ -25,6 +25,54 @@ type MapActionStrip = {
   actions: (Omit<Action, "type" | "title" | "icon"> & { icon: NonNullable<Action['icon']> })[],
 }
 
+type Step = {
+  lane: {
+    shape: number,
+    isRecommended: boolean,
+  },
+  cue: string,
+  lanesImage: ImageResolvedAssetSource,
+  maneuver: {
+    type: number,
+    icon: ImageResolvedAssetSource,
+    roundaboutExitAngle: number,
+    roundaboutExitNumber: number,
+  },
+  road: string,
+}
+
+type Distance = {
+    displayDistance: number,
+    displayUnit: number,
+}
+
+type RoutingInfo = {
+  step: Step,
+  distance: Distance,
+  junctionImage: ImageResolvedAssetSource,
+  isLoading: boolean,
+  nextStep: Step,
+}
+
+type MessageInfo = {
+  title: string,
+  icon: ImageResolvedAssetSource,
+}
+
+type NavigationInfo = {
+  type: 'routingInfo' | 'messageInfo',
+  info: RoutingInfo | MessageInfo,
+}
+
+type TravelEstimate = {
+  remainingDistance: Distance,
+  destinationTime: {
+    timeSinceEpochMillis: number,
+    id: string,
+  },
+  remainingTimeSeconds: number,
+}
+
 type Metadata = PlaceMetadata;
 
 interface CommonAttributes {
@@ -84,6 +132,8 @@ interface NavigationTemplate extends CommonAttributes {
   id: string,
   actionStrip: ActionStrip,
   mapActionStrip?: MapActionStrip,
+  navigationInfo?: NavigationInfo,
+  destinationTravelEstimate?: TravelEstimate,
   component: React.ComponentType<any>,
 }
 

@@ -70,7 +70,62 @@ const Main = () => {
           },
         ]
       }}
-      id='test-android-auto' component={TestMap} />
+      navigationInfo={{
+        type: 'routingInfo',
+        info: {
+          step: {
+            lane: {
+              shape: 8,
+              isRecommended: true,
+            },
+            cue: 'Hello Step',
+            lanesImage: Image.resolveAssetSource(require('./images/click.png')),
+            maneuver: {
+              type: 6,
+              icon: Image.resolveAssetSource(require('./images/click.png')),
+              roundaboutExitAngle: 10,
+              roundaboutExitNumber: 2,
+            },
+            road: 'Custom Road',
+          },
+          distance: {
+            displayDistance: 10,
+            displayUnit: 2,
+          },
+          junctionImage: Image.resolveAssetSource(require('./images/click.png')),
+          isLoading: false,
+          nextStep: {
+            lane: {
+              shape: 8,
+              isRecommended: true,
+            },
+            cue: 'Next Step',
+            lanesImage: Image.resolveAssetSource(require('./images/click.png')),
+            maneuver: {
+              type: 6,
+              icon: Image.resolveAssetSource(require('./images/click.png')),
+              roundaboutExitAngle: 10,
+              roundaboutExitNumber: 2,
+            },
+            road: 'Next Custom Road',
+          }
+        }
+      }}
+      destinationTravelEstimate={{
+        remainingDistance: {
+          displayDistance: 10,
+          displayUnit: 3,
+        },
+        destinationTime: {
+          timeSinceEpochMillis: 1666056013736,
+          id: 'America/Cayman',
+        },
+        remainingTimeSeconds: 60000,
+      }}
+
+      id='test-android-auto'
+      component={TestMap}
+    />
   );
 };
 

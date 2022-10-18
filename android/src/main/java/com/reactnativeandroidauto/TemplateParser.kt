@@ -1,10 +1,9 @@
 package com.reactnativeandroidauto
 
-import android.graphics.Bitmap
 import android.util.Log
 import androidx.car.app.CarContext
 import androidx.car.app.model.*
-import androidx.car.app.navigation.model.NavigationTemplate
+import androidx.car.app.navigation.model.*
 import androidx.core.graphics.drawable.IconCompat
 import com.facebook.common.references.CloseableReference
 import com.facebook.datasource.DataSources
@@ -14,6 +13,7 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.views.imagehelper.ImageSource
+import java.util.*
 
 class TemplateParser internal constructor(
   private val context: CarContext,
@@ -46,7 +46,7 @@ class TemplateParser internal constructor(
     }
   }
 
-  private fun getBitmapFromSource(map: ReadableMap): Bitmap {
+  private fun parseCarIcon(map: ReadableMap): CarIcon {
     val source = ImageSource(context, map.getString("uri"))
     val imageRequest = ImageRequestBuilder.newBuilderWithSource(source.uri).build()
     val dataSource = Fresco.getImagePipeline().fetchDecodedImage(imageRequest, context)
@@ -56,7 +56,7 @@ class TemplateParser internal constructor(
     CloseableReference.closeSafely(result)
     dataSource.close()
 
-    return bitmap
+    return CarIcon.Builder(IconCompat.createWithBitmap(bitmap)).build()
   }
 
   private fun parseAction(map: ReadableMap?): Action {
@@ -66,9 +66,7 @@ class TemplateParser internal constructor(
         builder.setTitle(it)
       }
       map.getMap("icon")?.let {
-        val bitmap = getBitmapFromSource(it)
-        val icon = IconCompat.createWithBitmap(bitmap)
-        builder.setIcon(CarIcon.Builder(icon).build())
+        builder.setIcon(parseCarIcon(it))
       }
       try {
         builder.setBackgroundColor(getColor(map.getString("backgroundColor")))
@@ -85,6 +83,89 @@ class TemplateParser internal constructor(
     }
     return builder.build()
   }
+
+  private fun parseNavigationInfo(map: ReadableMap): NavigationTemplate.NavigationInfo {
+    val type = map.getString("type")
+    return if (type == "routingInfo") {
+      parseRoutingInfo(map.getMap("info")!!)
+    } else {
+      parseMessageInfo(map.getMap("info")!!)
+    }
+  }
+
+  private fun parseRoutingInfo(map: ReadableMap): RoutingInfo {
+    return RoutingInfo.Builder()
+      .apply {
+        setCurrentStep(parseStep(map.getMap("step")!!), parseDistance(map.getMap("distance")!!))
+        setJunctionImage(parseCarIcon(map.getMap("junctionImage")!!))
+        setLoading(map.getBoolean("isLoading"))
+        setNextStep(parseStep(map.getMap("nextStep")!!))
+      }.build()
+  }
+
+  private fun parseDistance(map: ReadableMap): Distance {
+    return Distance.create(map.getDouble("displayDistance"), map.getInt("displayUnit"))
+  }
+
+  private fun parseStep(map: ReadableMap): Step {
+    return Step.Builder().apply {
+      val lane = parseLane(map.getMap("lane")!!)
+      addLane(lane)
+      setCue(map.getString("cue")!!)
+      setLanesImage(parseCarIcon(map.getMap("lanesImage")!!))
+      setManeuver(parseManeuver(map.getMap("maneuver")!!))
+      setRoad(map.getString("road")!!)
+    }.build()
+  }
+
+  private fun parseLane(map: ReadableMap): Lane {
+    val laneBuilder = Lane.Builder()
+    val shape = map.getInt("shape")
+    val isRecommended = map.getBoolean("isRecommended")
+    return laneBuilder.addDirection(LaneDirection.create(shape, isRecommended)).build()
+  }
+
+  private fun parseManeuver(map: ReadableMap): Maneuver {
+    val type = map.getInt("type")
+    val builder = Maneuver.Builder(type)
+    builder.setIcon(parseCarIcon(map.getMap("icon")!!))
+    if (type == Maneuver.TYPE_ROUNDABOUT_ENTER_AND_EXIT_CW_WITH_ANGLE
+      || type == Maneuver.TYPE_ROUNDABOUT_ENTER_AND_EXIT_CCW_WITH_ANGLE
+    ) {
+      builder.setRoundaboutExitAngle(map.getInt("roundaboutExitAngle"))
+    }
+
+    if (type == Maneuver.TYPE_ROUNDABOUT_ENTER_AND_EXIT_CW
+      || type == Maneuver.TYPE_ROUNDABOUT_ENTER_AND_EXIT_CCW
+      || type == Maneuver.TYPE_ROUNDABOUT_ENTER_AND_EXIT_CW_WITH_ANGLE
+      || type == Maneuver.TYPE_ROUNDABOUT_ENTER_AND_EXIT_CCW_WITH_ANGLE
+    ) {
+      builder.setRoundaboutExitNumber(map.getInt("roundaboutExitNumber"))
+    }
+
+    return builder.build()
+  }
+
+  private fun parseMessageInfo(map: ReadableMap): MessageInfo {
+    val builder = MessageInfo.Builder(map.getString("title")!!)
+    builder.setImage(parseCarIcon(map.getMap("icon")!!))
+    return builder.build()
+  }
+
+  private fun parseTravelEstimate(map: ReadableMap): TravelEstimate {
+    val dateTimeMap = map.getMap("destinationTime")!!
+    val destinationDateTime = DateTimeWithZone.create(
+      dateTimeMap.getDouble("timeSinceEpochMillis").toLong(),
+      TimeZone.getTimeZone(dateTimeMap.getString("id")),
+    )
+    val builder = TravelEstimate.Builder(
+      parseDistance(map.getMap("remainingDistance")!!),
+      destinationDateTime,
+    )
+    builder.setRemainingTimeSeconds(map.getDouble("remainingTimeSeconds").toLong())
+    return builder.build()
+  }
+
 
   private fun getColor(colorName: String?): CarColor {
     return when (colorName) {
@@ -107,6 +188,12 @@ class TemplateParser internal constructor(
       val mapActionStrip = map.getMap("mapActionStrip")
       mapActionStrip?.let {
         builder.setMapActionStrip(parseActionStrip(it)!!)
+      }
+      map.getMap("navigationInfo")?.let {
+        builder.setNavigationInfo(parseNavigationInfo(it))
+      }
+      map.getMap("destinationTravelEstimate")?.let {
+        builder.setDestinationTravelEstimate(parseTravelEstimate(it))
       }
     } catch (e: Exception) {
       e.printStackTrace()
