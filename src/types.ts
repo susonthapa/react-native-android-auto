@@ -1,3 +1,6 @@
+import type React from "react";
+import type { ImageResolvedAssetSource } from "react-native";
+
 type HeaderAction = "back" | "app_icon";
 type CarColor =
   | "blue"
@@ -18,6 +21,10 @@ interface ActionStrip {
   actions: Omit<Action, "type">[];
 }
 
+type MapActionStrip = {
+  actions: (Omit<Action, "type" | "title" | "icon"> & { icon: NonNullable<Action['icon']> })[],
+}
+
 type Metadata = PlaceMetadata;
 
 interface CommonAttributes {
@@ -26,7 +33,8 @@ interface CommonAttributes {
 
 interface Action extends CommonAttributes {
   type: "action";
-  title: string;
+  title?: string;
+  icon?: ImageResolvedAssetSource;
   backgroundColor?: CarColor;
   onPress?: (event: {}) => any;
 }
@@ -71,6 +79,14 @@ interface PaneTemplate extends CommonAttributes {
   children: ItemList[];
 }
 
+interface NavigationTemplate extends CommonAttributes {
+  type: "navigation-template",
+  id: string,
+  actionStrip: ActionStrip,
+  mapActionStrip?: MapActionStrip,
+  component: React.ComponentType<any>,
+}
+
 interface Screen extends CommonAttributes {
   type: "screen";
   name: string;
@@ -86,6 +102,7 @@ interface ScreenManager extends CommonAttributes {
 export type AndroidAutoTemplate =
   | PaneTemplate
   | ListTemplate
+  | NavigationTemplate
   | PlaceListMapTemplate;
 
 export type ExtractElementByType<Type extends AndroidAutoElement["type"]> =

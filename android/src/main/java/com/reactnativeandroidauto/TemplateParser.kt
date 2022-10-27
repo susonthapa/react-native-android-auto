@@ -1,20 +1,117 @@
 package com.reactnativeandroidauto
 
+import android.graphics.Bitmap
 import android.util.Log
+import androidx.car.app.CarContext
 import androidx.car.app.model.*
+import androidx.car.app.navigation.model.NavigationTemplate
+import androidx.core.graphics.drawable.IconCompat
+import com.facebook.common.references.CloseableReference
+import com.facebook.datasource.DataSources
+import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.imagepipeline.image.CloseableBitmap
+import com.facebook.imagepipeline.request.ImageRequestBuilder
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableNativeMap
+import com.facebook.react.views.imagehelper.ImageSource
 
-class TemplateParser internal constructor(private val reactCarRenderContext: ReactCarRenderContext) {
+class TemplateParser internal constructor(
+  private val context: CarContext,
+  private val reactCarRenderContext: ReactCarRenderContext
+) {
   fun parseTemplate(renderMap: ReadableMap): Template {
     return when (renderMap.getString("type")) {
       "list-template" -> parseListTemplateChildren(renderMap)
       "place-list-map-template" -> parsePlaceListMapTemplate(renderMap)
       "pane-template" -> parsePaneTemplate(renderMap)
+      "navigation-template" -> parseNavigationTemplate(renderMap)
       else -> PaneTemplate.Builder(
         Pane.Builder().setLoading(true).build()
       ).setTitle("Pane Template").build()
     }
+  }
+
+  private fun parseActionStrip(map: ReadableMap?): ActionStrip? {
+    val builder = ActionStrip.Builder()
+    return if (map != null) {
+      val actions = map.getArray("actions")
+      for (i in 0 until actions!!.size()) {
+        val actionMap = actions.getMap(i)
+        val action = parseAction(actionMap)
+        builder.addAction(action)
+      }
+      builder.build()
+    } else {
+      null
+    }
+  }
+
+  private fun getBitmapFromSource(map: ReadableMap): Bitmap {
+    val source = ImageSource(context, map.getString("uri"))
+    val imageRequest = ImageRequestBuilder.newBuilderWithSource(source.uri).build()
+    val dataSource = Fresco.getImagePipeline().fetchDecodedImage(imageRequest, context)
+    val result = DataSources.waitForFinalResult(dataSource) as CloseableReference<CloseableBitmap>
+    val bitmap = result.get().underlyingBitmap
+
+    CloseableReference.closeSafely(result)
+    dataSource.close()
+
+    return bitmap
+  }
+
+  private fun parseAction(map: ReadableMap?): Action {
+    val builder = Action.Builder()
+    if (map != null) {
+      map.getString("title")?.let {
+        builder.setTitle(it)
+      }
+      map.getMap("icon")?.let {
+        val bitmap = getBitmapFromSource(it)
+        val icon = IconCompat.createWithBitmap(bitmap)
+        builder.setIcon(CarIcon.Builder(icon).build())
+      }
+      try {
+        builder.setBackgroundColor(getColor(map.getString("backgroundColor")))
+      } catch (e: Exception) {
+        e.printStackTrace()
+      }
+      try {
+        val onPress = map.getInt("onPress")
+        builder.setOnClickListener { invokeCallback(onPress) }
+      } catch (e: Exception) {
+        Log.d("AUTO", "Couldn't parseAction", e)
+        e.printStackTrace()
+      }
+    }
+    return builder.build()
+  }
+
+  private fun getColor(colorName: String?): CarColor {
+    return when (colorName) {
+      "blue" -> CarColor.BLUE
+      "green" -> CarColor.GREEN
+      "primary" -> CarColor.PRIMARY
+      "red" -> CarColor.RED
+      "secondary" -> CarColor.SECONDARY
+      "yellow" -> CarColor.YELLOW
+      "default" -> CarColor.DEFAULT
+      else -> CarColor.DEFAULT
+    }
+  }
+
+  private fun parseNavigationTemplate(map: ReadableMap): NavigationTemplate {
+    val builder = NavigationTemplate.Builder()
+    try {
+      val actionStrip = parseActionStrip(map.getMap("actionStrip"))!!
+      builder.setActionStrip(actionStrip)
+      val mapActionStrip = map.getMap("mapActionStrip")
+      mapActionStrip?.let {
+        builder.setMapActionStrip(parseActionStrip(it)!!)
+      }
+    } catch (e: Exception) {
+      e.printStackTrace()
+    }
+    return builder.build()
   }
 
   private fun parsePaneTemplate(map: ReadableMap): PaneTemplate {
@@ -63,54 +160,6 @@ class TemplateParser internal constructor(private val reactCarRenderContext: Rea
       e.printStackTrace()
     }
     return builder.build()
-  }
-
-  private fun parseActionStrip(map: ReadableMap?): ActionStrip? {
-    val builder = ActionStrip.Builder()
-    return if (map != null) {
-      val actions = map.getArray("actions")
-      for (i in 0 until actions!!.size()) {
-        val actionMap = actions.getMap(i)
-        val action = parseAction(actionMap)
-        builder.addAction(action)
-      }
-      builder.build()
-    } else {
-      null
-    }
-  }
-
-  private fun parseAction(map: ReadableMap?): Action {
-    val builder = Action.Builder()
-    if (map != null) {
-      builder.setTitle(map.getString("title")!!)
-      try {
-        builder.setBackgroundColor(getColor(map.getString("backgroundColor")))
-      } catch (e: Exception) {
-        e.printStackTrace()
-      }
-      try {
-        val onPress = map.getInt("onPress")
-        builder.setOnClickListener { invokeCallback(onPress) }
-      } catch (e: Exception) {
-        Log.d("AUTO", "Couldn't parseAction", e)
-        e.printStackTrace()
-      }
-    }
-    return builder.build()
-  }
-
-  private fun getColor(colorName: String?): CarColor {
-    return when (colorName) {
-      "blue" -> CarColor.BLUE
-      "green" -> CarColor.GREEN
-      "primary" -> CarColor.PRIMARY
-      "red" -> CarColor.RED
-      "secondary" -> CarColor.SECONDARY
-      "yellow" -> CarColor.YELLOW
-      "default" -> CarColor.DEFAULT
-      else -> CarColor.DEFAULT
-    }
   }
 
   private fun parsePlaceListMapTemplate(map: ReadableMap): PlaceListMapTemplate {
@@ -252,5 +301,9 @@ class TemplateParser internal constructor(private val reactCarRenderContext: Rea
     params.putInt("id", callbackId)
     params.putString("screen", reactCarRenderContext.screenMarker)
     reactCarRenderContext.eventCallback!!.invoke(params)
+  }
+
+  companion object {
+    const val TAG = "TemplateParser"
   }
 }

@@ -1,19 +1,19 @@
 package com.reactnativeandroidauto
 
-import com.facebook.react.module.annotations.ReactModule
-import androidx.car.app.CarContext
-import androidx.car.app.ScreenManager
 import android.content.Intent
 import android.net.Uri
 import android.os.Handler
-import androidx.car.app.CarToast
-import com.facebook.react.modules.debug.DevSettingsModule
-import androidx.activity.OnBackPressedCallback
-import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
 import android.os.Looper
 import android.util.Log
+import androidx.activity.OnBackPressedCallback
+import androidx.car.app.CarContext
+import androidx.car.app.CarToast
+import androidx.car.app.ScreenManager
 import androidx.car.app.model.Template
 import com.facebook.react.bridge.*
+import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
+import com.facebook.react.modules.debug.DevSettingsModule
 import java.util.*
 
 @ReactModule(name = AndroidAutoModule.MODULE_NAME)
@@ -43,9 +43,8 @@ class AndroidAutoModule internal constructor(private val reactContext: ReactAppl
 
   @ReactMethod
   fun setTemplate(name: String, renderMap: ReadableMap, callback: Callback?) {
-    var screen = getScreen(name)
+    val screen = getScreen(name)
     if (screen == null) {
-      screen = currentCarScreen
       Log.d("AUTO", "Screen $name not found!")
       return
     }
@@ -53,21 +52,24 @@ class AndroidAutoModule internal constructor(private val reactContext: ReactAppl
     val template = parseTemplate(renderMap, reactCarRenderContext)
     reactCarRenderContextMap.remove(screen)
     reactCarRenderContextMap[screen] = reactCarRenderContext
-    screen.setTemplate(template)
+    screen.setTemplate(template, renderMap)
   }
 
   @ReactMethod
   fun pushScreen(name: String?, renderMap: ReadableMap, callback: Callback?) {
     val reactCarRenderContext = ReactCarRenderContext(name!!, callback)
-    val template = parseTemplate(renderMap, reactCarRenderContext)
     val screen = CarScreen(carContext)
+    screenManager = screen.screenManager
     reactCarRenderContextMap.remove(screen)
     reactCarRenderContextMap[screen] = reactCarRenderContext
     screen.marker = name
-    screen.setTemplate(template)
+    val template = parseTemplate(renderMap, reactCarRenderContext)
+    screen.setTemplate(template, renderMap)
     carScreens[name] = screen
     currentCarScreen = screen
-    screenManager!!.push(screen)
+    handler.post {
+      screenManager!!.push(screen)
+    }
   }
 
   @ReactMethod
@@ -137,7 +139,7 @@ class AndroidAutoModule internal constructor(private val reactContext: ReactAppl
     renderMap: ReadableMap,
     reactCarRenderContext: ReactCarRenderContext
   ): Template {
-    val templateParser = TemplateParser(reactCarRenderContext)
+    val templateParser = TemplateParser(carContext, reactCarRenderContext)
     return templateParser.parseTemplate(renderMap)
   }
 
