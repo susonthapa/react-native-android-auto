@@ -18,6 +18,7 @@ class CarService : CarAppService() {
   }
 
   override fun onCreateSession(): Session {
-    return CarServiceSession(reactInstanceManager.currentReactContext)
+    return CarServiceSession(reactInstanceManager)
   }
+
 }
