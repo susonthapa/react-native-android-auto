@@ -14,6 +14,7 @@ import com.facebook.react.bridge.*
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
 import com.facebook.react.modules.debug.DevSettingsModule
+import com.reactnativeandroidauto.template.TemplateFactory
 import java.util.*
 
 @ReactModule(name = AndroidAutoModule.MODULE_NAME)
@@ -139,8 +140,8 @@ class AndroidAutoModule internal constructor(private val reactContext: ReactAppl
     renderMap: ReadableMap,
     reactCarRenderContext: ReactCarRenderContext
   ): Template {
-    val templateParser = TemplateParser(carContext, reactCarRenderContext)
-    return templateParser.parseTemplate(renderMap)
+    val factory = TemplateFactory(carContext, reactCarRenderContext)
+    return factory.getTemplate(renderMap)
   }
 
   private fun getScreen(name: String): CarScreen? {
