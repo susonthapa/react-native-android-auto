@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.car.app.Screen
 import androidx.car.app.Session
-import com.facebook.react.ReactApplication
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
@@ -13,10 +12,8 @@ import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.modules.appregistry.AppRegistry
 import com.facebook.react.modules.core.TimingModule
 
-class CarServiceSession(private val reactContext: ReactContext?) : Session() {
+class CarServiceSession(private val reactInstanceManager: ReactInstanceManager) : Session() {
   private lateinit var screen: CarScreen
-  private val reactInstanceManager: ReactInstanceManager? =
-    (reactContext?.applicationContext as? ReactApplication)?.reactNativeHost?.reactInstanceManager
 
   override fun onCreateScreen(intent: Intent): Screen {
     Log.d("Auto", "On create screen " + intent.action + " - " + intent.dataString)
@@ -27,8 +24,9 @@ class CarServiceSession(private val reactContext: ReactContext?) : Session() {
   }
 
   private fun runJsApplication() {
+    val reactContext = reactInstanceManager.currentReactContext
     if (reactContext == null) {
-      reactInstanceManager!!.addReactInstanceEventListener(
+      reactInstanceManager.addReactInstanceEventListener(
         object : ReactInstanceManager.ReactInstanceEventListener {
           override fun onReactContextInitialized(reactContext: ReactContext) {
             invokeStartTask(reactContext)
@@ -41,14 +39,8 @@ class CarServiceSession(private val reactContext: ReactContext?) : Session() {
     }
   }
 
-  private fun invokeStartTask(reactContext: ReactContext?) {
+  private fun invokeStartTask(reactContext: ReactContext) {
     try {
-      if (reactInstanceManager == null) {
-        return
-      }
-      if (reactContext == null) {
-        return
-      }
       val catalystInstance = reactContext.catalystInstance
       val jsAppModuleName = "androidAuto"
       val appParams = WritableNativeMap()
