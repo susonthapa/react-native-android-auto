@@ -46,7 +46,7 @@ class AndroidAutoModule internal constructor(private val reactContext: ReactAppl
   fun setTemplate(name: String, renderMap: ReadableMap, callback: Callback?) {
     val screen = getScreen(name)
     if (screen == null) {
-      Log.d("AUTO", "Screen $name not found!")
+      Log.d(TAG, "Screen $name not found!")
       return
     }
     val reactCarRenderContext = ReactCarRenderContext(screen.marker!!, callback)
@@ -111,13 +111,13 @@ class AndroidAutoModule internal constructor(private val reactContext: ReactAppl
   @ReactMethod
   fun setEventCallback(name: String, callback: Callback?) {
     val screen = getScreen(name)
-    Log.d("AUTO", "Set callback 1 for $name")
+    Log.d(TAG, "Set callback 1 for $name")
     if (screen == null) {
       return
     }
-    Log.d("AUTO", "Set callback 2 for $name")
+    Log.d(TAG, "Set callback 2 for $name")
     val reactCarRenderContext = reactCarRenderContextMap[screen] ?: return
-    Log.d("AUTO", "Set callback 3 for $name")
+    Log.d(TAG, "Set callback 3 for $name")
     reactCarRenderContext.eventCallback = callback
   }
 
@@ -128,7 +128,7 @@ class AndroidAutoModule internal constructor(private val reactContext: ReactAppl
     carScreens["root"] = this.currentCarScreen
     val callback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
       override fun handleOnBackPressed() {
-        Log.d("AUTO", "Back button pressed")
+        Log.d(TAG, "Back button pressed")
         sendEvent("android_auto:back_button", WritableNativeMap())
       }
     }
@@ -163,6 +163,7 @@ class AndroidAutoModule internal constructor(private val reactContext: ReactAppl
 
   companion object {
     const val MODULE_NAME = "CarModule"
+    const val TAG = "AndroidAutoModule"
   }
 
 }

@@ -16,7 +16,7 @@ class CarServiceSession(private val reactInstanceManager: ReactInstanceManager) 
   private lateinit var screen: CarScreen
 
   override fun onCreateScreen(intent: Intent): Screen {
-    Log.d("Auto", "On create screen " + intent.action + " - " + intent.dataString)
+    Log.d(TAG, "On create screen " + intent.action + " - " + intent.dataString)
     screen = CarScreen(carContext)
     screen.marker = "root"
     runJsApplication()
@@ -61,5 +61,9 @@ class CarServiceSession(private val reactInstanceManager: ReactInstanceManager) 
     } catch (e: Exception) {
       e.printStackTrace()
     }
+  }
+
+  companion object {
+    const val TAG = "CarServiceSession"
   }
 }
