@@ -13,6 +13,8 @@ type CarColor =
 
 interface PlaceMetadata {
   type: "place";
+  distance: Distance,
+  icon: ImageResolvedAssetSource,
   latitude: number;
   longitude: number;
 }
@@ -42,8 +44,8 @@ type Step = {
 }
 
 type Distance = {
-    displayDistance: number,
-    displayUnit: number,
+  displayDistance: number,
+  displayUnit: number,
 }
 
 type RoutingInfo = {
@@ -116,7 +118,7 @@ interface PlaceListMapTemplate extends CommonAttributes {
   headerAction?: HeaderAction;
   isLoading?: boolean;
   actionStrip?: ActionStrip;
-  children: ItemList[];
+  children: Row[];
 }
 
 interface PaneTemplate extends CommonAttributes {

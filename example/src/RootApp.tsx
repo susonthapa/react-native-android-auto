@@ -34,6 +34,33 @@ function TestMap() {
   )
 }
 
+const PlaceList = () => {
+  return (
+    <place-list-map-template title='Hello World'>
+      <row title='This is row One %d' metadata={{
+        type: 'place',
+        distance: {
+          displayDistance: 100,
+          displayUnit: 3,
+        },
+        icon: Image.resolveAssetSource(require('./images/click.png')),
+        latitude: 39.3266,
+        longitude: -110.9646,
+      }} onPress={() => { }} />
+      <row title='This is row Two %d' metadata={{
+        type: 'place',
+        distance: {
+          displayDistance: 100,
+          displayUnit: 3,
+        },
+        icon: Image.resolveAssetSource(require('./images/click.png')),
+        latitude: 39.3336,
+        longitude: -110.9694,
+      }} onPress={() => { }} />
+    </place-list-map-template>
+  )
+}
+
 const Main = () => {
   const navigation = useCarNavigation()
   return (
@@ -133,7 +160,7 @@ const RootApp = () => {
 
   return (
     <ScreenManager>
-      <Screen name="root" render={Main} />
+      <Screen name="root" render={PlaceList} />
       <Screen name="list" render={DeliveryListScreen} />
     </ScreenManager>
   );

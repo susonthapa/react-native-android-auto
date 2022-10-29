@@ -1,9 +1,13 @@
 package com.reactnativeandroidauto.template
 
 import android.graphics.Bitmap
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.util.Log
 import androidx.car.app.CarContext
 import androidx.car.app.model.*
+import androidx.car.app.model.PlaceMarker.TYPE_IMAGE
 import androidx.core.graphics.drawable.IconCompat
 import com.facebook.common.references.CloseableReference
 import com.facebook.datasource.DataSources
@@ -103,8 +107,7 @@ abstract class RNTemplate(
         val onPress = map.getInt("onPress")
         builder.setOnClickListener { invokeCallback(onPress) }
       } catch (e: Exception) {
-        Log.d("AUTO", "Couldn't parseAction", e)
-        e.printStackTrace()
+        Log.w(TAG, "Couldn't parseAction, ${e.message}")
       }
     }
     return builder.build()
@@ -137,30 +140,86 @@ abstract class RNTemplate(
     }
   }
 
-  protected fun buildRow(rowRenderMap: ReadableMap): Row {
-    val builder = Row.Builder()
-    builder.setTitle(rowRenderMap.getString("title")!!)
-    try {
-      val texts = rowRenderMap.getArray("texts")
-      for (i in 0 until texts!!.size()) {
-        builder.addText(texts.getString(i))
+  private fun parsePlace(props: ReadableMap): Place {
+    val builder = Place.Builder(
+      CarLocation.create(
+        props.getDouble("latitude"),
+        props.getDouble("longitude"),
+      )
+    )
+    PlaceMarker.Builder().apply {
+      setIcon(parseCarIcon(props.getMap("icon")!!), PlaceMarker.TYPE_IMAGE)
+      builder.setMarker(this.build())
+    }
+
+    return builder.build()
+  }
+
+  private fun parseMetaData(props: ReadableMap?): Metadata? {
+    val type = props?.getString("type")
+    if (props == null || type == null || type != "place") {
+      Log.w(TAG, "parseMetaData: invalid type provided $type")
+      return null
+    }
+    val builder = Metadata.Builder()
+    builder.setPlace(parsePlace(props))
+
+    return builder.build()
+  }
+
+  private fun getCarText(title: String, props: ReadableMap?): CarText {
+    val spanBuilder = SpannableString(title)
+    props?.let {
+      try {
+        val index = title.indexOf("%d")
+        if (index != -1) {
+          spanBuilder.setSpan(
+            DistanceSpan.create(parseDistance(props)),
+            index,
+            index + 2,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE,
+          )
+        }
+        it
+      } catch (e: Exception) {
+        Log.w(TAG, "getCarText: failed to parse the CarText")
       }
-    } catch (e: Exception) {
-      e.printStackTrace()
+    }
+    return CarText.Builder(spanBuilder).build()
+  }
+
+  protected fun buildRow(props: ReadableMap): Row {
+    val builder = Row.Builder()
+    builder.setTitle(
+      getCarText(
+        props.getString("title")!!,
+        props.getMap("metadata")?.getMap("distance")
+      )
+    )
+    props.getArray("texts")?.let {
+      for (i in 0 until it.size()) {
+        builder.addText(it.getString(i))
+      }
     }
     try {
-      val onPress = rowRenderMap.getInt("onPress")
+      val onPress = props.getInt("onPress")
       builder.setBrowsable(true)
       builder.setOnClickListener { invokeCallback(onPress) }
     } catch (e: Exception) {
-      e.printStackTrace()
+      Log.w(TAG, "buildRow: failed to set clickListener on the row")
     }
-    try {
-//            builder.setMetadata(parseMetaData(rowRenderMap.getMap("metadata")));
-    } catch (e: Exception) {
-      e.printStackTrace()
+    parseMetaData(props.getMap("metadata"))?.let {
+      builder.setMetadata(it)
     }
     return builder.build()
+  }
+
+  protected fun parseDistance(map: ReadableMap): Distance {
+    return Distance.create(map.getDouble("displayDistance"), map.getInt("displayUnit"))
+  }
+
+  companion object {
+    const val TAG = "RNTemplate"
   }
 
 }

@@ -22,9 +22,6 @@ class RNNavigationTemplate(
   renderContext: ReactCarRenderContext,
 ) : RNTemplate(context, renderContext) {
 
-  private fun parseDistance(map: ReadableMap): Distance {
-    return Distance.create(map.getDouble("displayDistance"), map.getInt("displayUnit"))
-  }
 
   private fun parseStep(map: ReadableMap): Step {
     return Step.Builder().apply {
