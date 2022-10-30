@@ -37,7 +37,7 @@ class RNPaneTemplate(
       for (i in 0 until children!!.size()) {
         val child = children.getMap(i)
         val type = child.getString("type")
-        Log.d("AUTO", "Adding child to row")
+        Log.d(TAG, "Adding child to row")
         if (type == "row") {
           paneBuilder.addRow(buildRow(child))
         }
@@ -62,11 +62,15 @@ class RNPaneTemplate(
       e.printStackTrace()
     }
     try {
-      val actionStripMap = props.getMap("actionStrip")
-      builder.setActionStrip(parseActionStrip(actionStripMap)!!)
+      val actionStripMap = props.getMap("actionStrip")!!
+      builder.setActionStrip(parseActionStrip(actionStripMap))
     } catch (e: Exception) {
-      e.printStackTrace()
+      Log.w(TAG, "parse: failed to set the actionStrip: ${e.message}")
     }
     return builder.build()
+  }
+
+  companion object {
+    const val TAG = "RNPaneTemplate"
   }
 }

@@ -13,6 +13,8 @@ type CarColor =
 
 interface PlaceMetadata {
   type: "place";
+  distance: Distance,
+  icon: ImageResolvedAssetSource,
   latitude: number;
   longitude: number;
 }
@@ -30,33 +32,33 @@ type Step = {
     shape: number,
     isRecommended: boolean,
   },
-  cue: string,
+  cue?: string,
   lanesImage: ImageResolvedAssetSource,
-  maneuver: {
+  maneuver?: {
     type: number,
     icon: ImageResolvedAssetSource,
     roundaboutExitAngle: number,
     roundaboutExitNumber: number,
   },
-  road: string,
+  road?: string,
 }
 
 type Distance = {
-    displayDistance: number,
-    displayUnit: number,
+  displayDistance: number,
+  displayUnit: number,
 }
 
 type RoutingInfo = {
   step: Step,
-  distance: Distance,
-  junctionImage: ImageResolvedAssetSource,
   isLoading: boolean,
-  nextStep: Step,
+  distance: Distance,
+  junctionImage?: ImageResolvedAssetSource,
+  nextStep?: Step,
 }
 
 type MessageInfo = {
   title: string,
-  icon: ImageResolvedAssetSource,
+  icon?: ImageResolvedAssetSource,
 }
 
 type NavigationInfo = {
@@ -116,7 +118,7 @@ interface PlaceListMapTemplate extends CommonAttributes {
   headerAction?: HeaderAction;
   isLoading?: boolean;
   actionStrip?: ActionStrip;
-  children: ItemList[];
+  children: Row[];
 }
 
 interface PaneTemplate extends CommonAttributes {
