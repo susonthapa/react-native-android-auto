@@ -10,7 +10,7 @@ import com.reactnativeandroidauto.ReactCarRenderContext
  * Creates [PlaceListMapTemplate] from the given props
  *
  * @constructor
- * TODO
+ *
  *
  * @param context
  * @param renderContext

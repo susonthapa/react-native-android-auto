@@ -14,7 +14,6 @@ type Container = RootContainer | AndroidAutoElement;
 
 type ScreenContainer = ExtractElementByType<"screen">;
 
-// TODO(fix types)
 function applyProps(instance: any, allProps: any) {
   for (const [key, value] of Object.entries(allProps)) {
     if (key !== "children") {
@@ -267,7 +266,6 @@ export function render(element: React.ReactNode) {
     console.log("Initializing AndroidAuto module");
     AndroidAutoModule.init();
 
-    // TODO(fix the cast)
     Renderer.updateContainer(element as any, root, null, () => {
       AndroidAutoModule.invalidate("root");
     });

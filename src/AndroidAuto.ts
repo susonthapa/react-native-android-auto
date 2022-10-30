@@ -23,7 +23,6 @@ function prepareTemplate(name: string, template: AndroidAutoTemplate) {
     return undefined;
   });
 
-  // TODO(fix id type)
   const callbackFromNative = ({ id, ...event }: {id: any}) => {
     NativeModules.CarModule.setEventCallback(name, callbackFromNative);
     const callback = callbacks.get(id);

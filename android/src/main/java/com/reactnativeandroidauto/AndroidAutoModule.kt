@@ -110,14 +110,8 @@ class AndroidAutoModule internal constructor(private val reactContext: ReactAppl
 
   @ReactMethod
   fun setEventCallback(name: String, callback: Callback?) {
-    val screen = getScreen(name)
-    Log.d(TAG, "Set callback 1 for $name")
-    if (screen == null) {
-      return
-    }
-    Log.d(TAG, "Set callback 2 for $name")
+    val screen = getScreen(name) ?: return
     val reactCarRenderContext = reactCarRenderContextMap[screen] ?: return
-    Log.d(TAG, "Set callback 3 for $name")
     reactCarRenderContext.eventCallback = callback
   }
 
