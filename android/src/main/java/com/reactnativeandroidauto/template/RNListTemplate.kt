@@ -53,7 +53,7 @@ class RNListTemplate(
     }
     try {
       val actionStripMap = props.getMap("actionStrip")
-      builder.setActionStrip(parseActionStrip(actionStripMap)!!)
+      builder.setActionStrip(parseActionStrip(actionStripMap!!))
     } catch (e: Exception) {
       e.printStackTrace()
     }

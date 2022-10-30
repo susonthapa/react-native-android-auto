@@ -119,7 +119,7 @@ const Main = () => {
             displayDistance: 10,
             displayUnit: 2,
           },
-          junctionImage: Image.resolveAssetSource(require('./images/click.png')),
+          // junctionImage: Image.resolveAssetSource(require('./images/click.png')),
           isLoading: false,
           nextStep: {
             lane: {
@@ -160,7 +160,7 @@ const RootApp = () => {
 
   return (
     <ScreenManager>
-      <Screen name="root" render={PlaceList} />
+      <Screen name="root" render={Main} />
       <Screen name="list" render={DeliveryListScreen} />
     </ScreenManager>
   );

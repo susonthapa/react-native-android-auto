@@ -49,8 +49,8 @@ class RNPlaceListMapTemplate(
       builder.setItemList(itemListBuilder.build())
     }
     try {
-      val actionStripMap = props.getMap("actionStrip")
-      builder.setActionStrip(parseActionStrip(actionStripMap)!!)
+      val actionStripMap = props.getMap("actionStrip")!!
+      builder.setActionStrip(parseActionStrip(actionStripMap))
     } catch (e: Exception) {
       Log.w(TAG, "parse: failed to set the actionStrip: ${e.message}")
     }

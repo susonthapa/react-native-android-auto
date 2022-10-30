@@ -1,8 +1,8 @@
 package com.reactnativeandroidauto.template
 
+import android.util.Log
 import androidx.car.app.CarContext
 import androidx.car.app.model.DateTimeWithZone
-import androidx.car.app.model.Distance
 import androidx.car.app.navigation.model.*
 import com.facebook.react.bridge.ReadableMap
 import com.reactnativeandroidauto.ReactCarRenderContext
@@ -22,15 +22,13 @@ class RNNavigationTemplate(
   renderContext: ReactCarRenderContext,
 ) : RNTemplate(context, renderContext) {
 
-
   private fun parseStep(map: ReadableMap): Step {
     return Step.Builder().apply {
-      val lane = parseLane(map.getMap("lane")!!)
-      addLane(lane)
-      setCue(map.getString("cue")!!)
-      setLanesImage(parseCarIcon(map.getMap("lanesImage")!!))
-      setManeuver(parseManeuver(map.getMap("maneuver")!!))
-      setRoad(map.getString("road")!!)
+      map.getMap("lane")?.let { addLane(parseLane(it)) }
+      map.getString("cue")?.let { setCue(it) }
+      map.getMap("lanesImage")?.let { setLanesImage(parseCarIcon(it)) }
+      map.getMap("maneuver")?.let { setManeuver(parseManeuver(it)) }
+      map.getString("road")?.let { setRoad(it) }
     }.build()
   }
 
@@ -64,7 +62,7 @@ class RNNavigationTemplate(
 
   private fun parseMessageInfo(map: ReadableMap): MessageInfo {
     val builder = MessageInfo.Builder(map.getString("title")!!)
-    builder.setImage(parseCarIcon(map.getMap("icon")!!))
+    map.getMap("icon")?.let { builder.setImage(parseCarIcon(it)) }
     return builder.build()
   }
 
@@ -85,10 +83,10 @@ class RNNavigationTemplate(
   private fun parseRoutingInfo(map: ReadableMap): RoutingInfo {
     return RoutingInfo.Builder()
       .apply {
-        setCurrentStep(parseStep(map.getMap("step")!!), parseDistance(map.getMap("distance")!!))
-        setJunctionImage(parseCarIcon(map.getMap("junctionImage")!!))
         setLoading(map.getBoolean("isLoading"))
-        setNextStep(parseStep(map.getMap("nextStep")!!))
+        setCurrentStep(parseStep(map.getMap("step")!!), parseDistance(map.getMap("distance")!!))
+        map.getMap("junctionImage")?.let { setJunctionImage(parseCarIcon(it)) }
+        map.getMap("nextStep")?.let { setNextStep(parseStep(it)) }
       }.build()
   }
 
@@ -104,11 +102,10 @@ class RNNavigationTemplate(
   override fun parse(props: ReadableMap): NavigationTemplate {
     val builder = NavigationTemplate.Builder()
     try {
-      val actionStrip = parseActionStrip(props.getMap("actionStrip"))!!
+      val actionStrip = parseActionStrip(props.getMap("actionStrip")!!)
       builder.setActionStrip(actionStrip)
-      val mapActionStrip = props.getMap("mapActionStrip")
-      mapActionStrip?.let {
-        builder.setMapActionStrip(parseActionStrip(it)!!)
+      props.getMap("mapActionStrip")?.let {
+        builder.setMapActionStrip(parseActionStrip(it))
       }
       props.getMap("navigationInfo")?.let {
         builder.setNavigationInfo(parseNavigationInfo(it))
@@ -117,9 +114,13 @@ class RNNavigationTemplate(
         builder.setDestinationTravelEstimate(parseTravelEstimate(it))
       }
     } catch (e: Exception) {
-      e.printStackTrace()
+      Log.w(TAG, "parse: failed to parse the navigation props, ${e.message}")
     }
     return builder.build()
+  }
+
+  companion object {
+    const val TAG = "RNNavigationTemplate"
   }
 
 }

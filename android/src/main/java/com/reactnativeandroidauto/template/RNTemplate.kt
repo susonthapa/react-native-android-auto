@@ -113,19 +113,15 @@ abstract class RNTemplate(
     return builder.build()
   }
 
-  protected fun parseActionStrip(map: ReadableMap?): ActionStrip? {
+  protected fun parseActionStrip(map: ReadableMap): ActionStrip {
     val builder = ActionStrip.Builder()
-    return if (map != null) {
-      val actions = map.getArray("actions")
-      for (i in 0 until actions!!.size()) {
-        val actionMap = actions.getMap(i)
-        val action = parseAction(actionMap)
-        builder.addAction(action)
-      }
-      builder.build()
-    } else {
-      null
+    val actions = map.getArray("actions")
+    for (i in 0 until actions!!.size()) {
+      val actionMap = actions.getMap(i)
+      val action = parseAction(actionMap)
+      builder.addAction(action)
     }
+    return builder.build()
   }
 
   protected fun getHeaderAction(actionName: String?): Action? {

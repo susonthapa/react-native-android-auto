@@ -32,15 +32,15 @@ type Step = {
     shape: number,
     isRecommended: boolean,
   },
-  cue: string,
+  cue?: string,
   lanesImage: ImageResolvedAssetSource,
-  maneuver: {
+  maneuver?: {
     type: number,
     icon: ImageResolvedAssetSource,
     roundaboutExitAngle: number,
     roundaboutExitNumber: number,
   },
-  road: string,
+  road?: string,
 }
 
 type Distance = {
@@ -50,15 +50,15 @@ type Distance = {
 
 type RoutingInfo = {
   step: Step,
-  distance: Distance,
-  junctionImage: ImageResolvedAssetSource,
   isLoading: boolean,
-  nextStep: Step,
+  distance: Distance,
+  junctionImage?: ImageResolvedAssetSource,
+  nextStep?: Step,
 }
 
 type MessageInfo = {
   title: string,
-  icon: ImageResolvedAssetSource,
+  icon?: ImageResolvedAssetSource,
 }
 
 type NavigationInfo = {
