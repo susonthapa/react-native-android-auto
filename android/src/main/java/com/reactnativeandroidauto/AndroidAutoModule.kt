@@ -75,9 +75,11 @@ class AndroidAutoModule internal constructor(private val reactContext: ReactAppl
 
   @ReactMethod
   fun popScreen() {
-    screenManager!!.pop()
-    removeScreen(currentCarScreen)
-    currentCarScreen = screenManager!!.top as CarScreen
+    handler.post {
+      screenManager!!.pop()
+      removeScreen(currentCarScreen)
+      currentCarScreen = screenManager!!.top as CarScreen
+    }
   }
 
   @ReactMethod
