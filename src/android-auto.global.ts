@@ -18,7 +18,9 @@ declare global {
       action: NativeToJSXElement<"action">;
       "pane-template": NativeToJSXElement<"pane-template">;
       row: NativeToJSXElement<"row">;
+      "grid-item": NativeToJSXElement<"grid-item">,
       "navigation-template": NativeToJSXElement<"navigation-template">;
+      "grid-template": NativeToJSXElement<"grid-template">
     }
   }
 }

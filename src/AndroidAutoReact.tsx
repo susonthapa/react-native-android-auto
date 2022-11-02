@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { DeviceEventEmitter } from "react-native";
 
 import type { ExtractElementByType, Route, RootContainer } from "./types";
 
 type ScreenContainer = ExtractElementByType<"screen">;
 
 const NavigationContext = React.createContext({
-  push: (() => {}) as (routeName: string, routeParams?: any) => void,
-  pop: (() => {}) as () => void,
-  registerScreen: (() => {}) as (screen: ScreenContainer) => void,
+  push: (() => { }) as (routeName: string, routeParams?: any) => void,
+  pop: (() => { }) as () => void,
+  registerScreen: (() => { }) as (screen: ScreenContainer) => void,
   stack: [] as Route[],
 });
 
@@ -24,7 +25,7 @@ export function RootView(props: {
         const screen = screens.current.find(({ name }) => name === routeName);
 
         if (!screen) {
-          console.log(`Cannot navigatie to ${routeName}: Route does not exist`);
+          console.log(`Cannot navigate to ${routeName}: Route does not exist`);
           return prev;
         }
 
@@ -116,7 +117,13 @@ export const ScreenManager = React.memo(function ScreenManager({
 }) {
   console.log("AndroidAuto: Screen Manager rendering");
 
-  const { stack } = useCarNavigation();
+  const { stack, pop } = useCarNavigation();
+  useEffect(() => {
+    const backButtonSub = DeviceEventEmitter.addListener('android_auto:back_button', pop)
+    return () => {
+      backButtonSub.remove()
+    }
+  }, [])
 
   return (
     <>

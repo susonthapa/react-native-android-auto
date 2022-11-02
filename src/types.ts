@@ -10,7 +10,7 @@ type CarColor =
   | "secondary"
   | "yellow"
   | "default";
-
+type PressHandler = (event: {}) => any
 interface PlaceMetadata {
   type: "place";
   distance: Distance,
@@ -93,8 +93,17 @@ interface Row extends CommonAttributes {
   type: "row";
   title: string;
   texts?: string[];
-  onPress?: (event: {}) => any;
+  image?: ImageResolvedAssetSource;
+  onPress?: PressHandler;
   metadata?: Metadata | undefined;
+}
+
+interface GridItem extends CommonAttributes {
+  type: "grid-item",
+  title: string,
+  text?: string,
+  image?: ImageResolvedAssetSource,
+  onPress?: PressHandler,
 }
 
 interface ItemList extends CommonAttributes {
@@ -110,6 +119,16 @@ interface ListTemplate extends CommonAttributes {
   isLoading?: boolean;
   actionStrip?: ActionStrip;
   children: ItemList[];
+}
+
+interface GridTemplate extends CommonAttributes {
+  type: "grid-template",
+  isLoading?: boolean,
+  title?: string,
+  noItemMessage?: string,
+  headerAction?: HeaderAction,
+  actionStrip?: ActionStrip,
+  children: GridItem[],
 }
 
 interface PlaceListMapTemplate extends CommonAttributes {
@@ -154,6 +173,7 @@ interface ScreenManager extends CommonAttributes {
 export type AndroidAutoTemplate =
   | PaneTemplate
   | ListTemplate
+  | GridTemplate
   | NavigationTemplate
   | PlaceListMapTemplate;
 
@@ -162,6 +182,7 @@ export type ExtractElementByType<Type extends AndroidAutoElement["type"]> =
 export type AndroidAutoElement =
   | AndroidAutoTemplate
   | Row
+  | GridItem
   | ItemList
   | ScreenManager
   | Screen

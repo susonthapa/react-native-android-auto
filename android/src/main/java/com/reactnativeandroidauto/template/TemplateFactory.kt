@@ -28,6 +28,7 @@ class TemplateFactory(
   fun getTemplate(props: ReadableMap): Template {
     val template = when (props.getString("type")) {
       "list-template" -> RNListTemplate(context, renderContext)
+      "grid-template" -> RNGridTemplate(context, renderContext)
       "place-list-map-template" -> RNPlaceListMapTemplate(context, renderContext)
       "pane-template" -> RNPaneTemplate(context, renderContext)
       "navigation-template" -> RNNavigationTemplate(context, renderContext)
