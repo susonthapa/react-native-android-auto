@@ -61,6 +61,19 @@ const PlaceList = () => {
   )
 }
 
+const GridMenu = () => {
+  return (
+    <grid-template title='Grid Menus' headerAction={'back'}>
+        <grid-item title='Menu One' image={Image.resolveAssetSource(require('./images/gear.png'))} />
+        <grid-item title='Awesome Title' image={Image.resolveAssetSource(require('./images/gear.png'))} />
+        <grid-item title='Another Menu' image={Image.resolveAssetSource(require('./images/gear.png'))} />
+        <grid-item title='Test Menu' image={Image.resolveAssetSource(require('./images/gear.png'))} />
+        <grid-item title='Food Menu' image={Image.resolveAssetSource(require('./images/gear.png'))} />
+        <grid-item title='Settings Menu' image={Image.resolveAssetSource(require('./images/gear.png'))} />
+    </grid-template>
+  )
+}
+
 const Main = () => {
   const navigation = useCarNavigation()
   return (
@@ -68,7 +81,7 @@ const Main = () => {
       actions: [
         {
           title: 'Action One',
-          onPress: () => navigation.push('list')
+          onPress: () => navigation.push('grid-menu'),
         },
         {
           icon: Image.resolveAssetSource(require('./images/click.png')),
@@ -156,16 +169,15 @@ const Main = () => {
   );
 };
 
-const RootApp = () => {
+const AndroidAuto = () => {
 
   return (
     <ScreenManager>
       <Screen name="root" render={Main} />
+      <Screen name="grid-menu" render={GridMenu} />
       <Screen name="list" render={DeliveryListScreen} />
     </ScreenManager>
   );
 };
 
-export default RootApp;
-
-// const styles = StyleSheet.create({});
+export default AndroidAuto;

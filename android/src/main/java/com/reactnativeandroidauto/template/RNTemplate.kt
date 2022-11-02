@@ -87,6 +87,10 @@ abstract class RNTemplate(
     return bitmap
   }
 
+  protected fun parseHeaderAction(type: String): Action {
+    return if (type == "back") Action.BACK else Action.APP_ICON
+  }
+
   protected fun parseAction(map: ReadableMap?): Action {
     val builder = Action.Builder()
     if (map != null) {
@@ -197,6 +201,9 @@ abstract class RNTemplate(
         builder.addText(it.getString(i))
       }
     }
+    props.getMap("image")?.let {
+      builder.setImage(parseCarIcon(it))
+    }
     try {
       val onPress = props.getInt("onPress")
       builder.setBrowsable(true)
@@ -212,6 +219,24 @@ abstract class RNTemplate(
 
   protected fun parseDistance(map: ReadableMap): Distance {
     return Distance.create(map.getDouble("displayDistance"), map.getInt("displayUnit"))
+  }
+
+  protected fun parseItemListChildren(itemList: ReadableMap): ItemList {
+    val children = itemList.getArray("children")
+    val builder = ItemList.Builder()
+    for (i in 0 until children!!.size()) {
+      val child = children.getMap(i)
+      val type = child.getString("type")
+      if (type == "row") {
+        builder.addItem(buildRow(child))
+      } else {
+        Log.w(
+          RNListTemplate.TAG,
+          "parseItemListChildren: children of item-list should be of type row, got $type"
+        )
+      }
+    }
+    return builder.build()
   }
 
   companion object {

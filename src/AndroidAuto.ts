@@ -24,6 +24,7 @@ function prepareTemplate(name: string, template: AndroidAutoTemplate) {
   });
 
   const callbackFromNative = ({ id, ...event }: {id: any}) => {
+    // Callback can only be called once so just a workaround to fix that by setting it again when we click it
     NativeModules.CarModule.setEventCallback(name, callbackFromNative);
     const callback = callbacks.get(id);
 

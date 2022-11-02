@@ -37,7 +37,7 @@ class RNListTemplate(
         if (type == "item-list") {
           builder.addSectionedList(
             SectionedItemList.create(
-              parseItemListChildren(child),
+              parseItemListChildren(child.getMap("children")!!),
               child.getString("header")!!,
             )
           )
@@ -58,26 +58,6 @@ class RNListTemplate(
       e.printStackTrace()
     }
     builder.setTitle(props.getString("title")!!)
-    return builder.build()
-  }
-
-  private fun parseItemListChildren(itemList: ReadableMap): ItemList {
-    val children = itemList.getArray("children")
-    val builder = ItemList.Builder()
-    for (i in 0 until children!!.size()) {
-      val child = children.getMap(i)
-      val type = child.getString("type")
-      if (type == "row") {
-        builder.addItem(buildRow(child))
-      } else {
-        Log.w(TAG, "parseItemListChildren: children of item-list should be of type row, got $type")
-      }
-    }
-    try {
-      builder.setNoItemsMessage(itemList.getString("noItemsMessage")!!)
-    } catch (e: Exception) {
-      Log.w(TAG, "parseItemListChildren: failed to set the setNoItemMessage")
-    }
     return builder.build()
   }
 
