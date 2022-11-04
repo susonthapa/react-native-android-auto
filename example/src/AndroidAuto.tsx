@@ -23,9 +23,14 @@ const DeliveryListScreen = () => {
 function TestMap() {
   const [count, setCount] = useState(0)
   useEffect(() => {
-    setInterval(() => {
+    console.log(`TODO: mounting TestMap`);
+    const interval = setInterval(() => {
       setCount((count) => count + 1)
     }, 1000)
+    return () => {
+      console.log(`TODO: unmounting TestMap`);
+      clearInterval(interval)
+    }
   }, [])
   return (
     <View style={{ width: 100, height: 100, backgroundColor: 'red' }}>
@@ -33,6 +38,8 @@ function TestMap() {
     </View>
   )
 }
+
+const MemoTestMap = React.memo(TestMap)
 
 const PlaceList = () => {
   return (
@@ -62,6 +69,10 @@ const PlaceList = () => {
 }
 
 const GridMenu = () => {
+  useEffect(() => {
+    console.log(`TODO: mounting GridMenu`);
+    return () => console.log('TODO: unmounting GridMenu')
+  }, [])
   return (
     <grid-template title='Grid Menus' headerAction={'back'}>
         <grid-item title='Menu One' image={Image.resolveAssetSource(require('./images/gear.png'))} />
@@ -76,6 +87,10 @@ const GridMenu = () => {
 
 const Main = () => {
   const navigation = useCarNavigation()
+  useEffect(() => {
+    console.log('TODO: mounting Main')
+    return () => console.log('TODO: unmounting Main')
+  }, [])
   return (
     <navigation-template actionStrip={{
       actions: [
@@ -110,47 +125,47 @@ const Main = () => {
           },
         ]
       }}
-      navigationInfo={{
-        type: 'routingInfo',
-        info: {
-          step: {
-            lane: {
-              shape: 8,
-              isRecommended: true,
-            },
-            cue: 'Hello Step',
-            lanesImage: Image.resolveAssetSource(require('./images/click.png')),
-            maneuver: {
-              type: 6,
-              icon: Image.resolveAssetSource(require('./images/click.png')),
-              roundaboutExitAngle: 10,
-              roundaboutExitNumber: 2,
-            },
-            road: 'Custom Road',
-          },
-          distance: {
-            displayDistance: 10,
-            displayUnit: 2,
-          },
-          // junctionImage: Image.resolveAssetSource(require('./images/click.png')),
-          isLoading: false,
-          nextStep: {
-            lane: {
-              shape: 8,
-              isRecommended: true,
-            },
-            cue: 'Next Step',
-            lanesImage: Image.resolveAssetSource(require('./images/click.png')),
-            maneuver: {
-              type: 6,
-              icon: Image.resolveAssetSource(require('./images/click.png')),
-              roundaboutExitAngle: 10,
-              roundaboutExitNumber: 2,
-            },
-            road: 'Next Custom Road',
-          }
-        }
-      }}
+      // navigationInfo={{
+      //   type: 'routingInfo',
+      //   info: {
+      //     step: {
+      //       lane: {
+      //         shape: 8,
+      //         isRecommended: true,
+      //       },
+      //       cue: 'Hello Step',
+      //       lanesImage: Image.resolveAssetSource(require('./images/click.png')),
+      //       maneuver: {
+      //         type: 6,
+      //         icon: Image.resolveAssetSource(require('./images/click.png')),
+      //         roundaboutExitAngle: 10,
+      //         roundaboutExitNumber: 2,
+      //       },
+      //       road: 'Custom Road',
+      //     },
+      //     distance: {
+      //       displayDistance: 10,
+      //       displayUnit: 2,
+      //     },
+      //     // junctionImage: Image.resolveAssetSource(require('./images/click.png')),
+      //     isLoading: false,
+      //     nextStep: {
+      //       lane: {
+      //         shape: 8,
+      //         isRecommended: true,
+      //       },
+      //       cue: 'Next Step',
+      //       lanesImage: Image.resolveAssetSource(require('./images/click.png')),
+      //       maneuver: {
+      //         type: 6,
+      //         icon: Image.resolveAssetSource(require('./images/click.png')),
+      //         roundaboutExitAngle: 10,
+      //         roundaboutExitNumber: 2,
+      //       },
+      //       road: 'Next Custom Road',
+      //     }
+      //   }
+      // }}
       destinationTravelEstimate={{
         remainingDistance: {
           displayDistance: 10,
@@ -170,6 +185,13 @@ const Main = () => {
 };
 
 const AndroidAuto = () => {
+
+  useEffect(() => {
+    console.log(`TODO: AndroidAuto mounting`);
+    return () => {
+      console.log(`TODO: AndroidAuto unmounting`)
+    }
+  }, [])
 
   return (
     <ScreenManager>

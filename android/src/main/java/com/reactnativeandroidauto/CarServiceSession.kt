@@ -23,6 +23,7 @@ class CarServiceSession(private val reactInstanceManager: ReactInstanceManager) 
     return screen
   }
 
+
   private fun runJsApplication() {
     val reactContext = reactInstanceManager.currentReactContext
     if (reactContext == null) {

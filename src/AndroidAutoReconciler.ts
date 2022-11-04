@@ -1,7 +1,7 @@
 import React from "react";
-import Reconciler from "react-reconciler";
+import Reconciler, { OpaqueRoot } from "react-reconciler";
 
-import { AppRegistry } from "react-native";
+import { AppRegistry, DeviceEventEmitter } from "react-native";
 import { AndroidAutoModule } from "./AndroidAuto";
 import { RootView } from "./AndroidAutoReact";
 import type {
@@ -79,7 +79,7 @@ const Renderer = Reconciler<
     _internalInstanceHandle
   ) {
     const { children, ...props } = allProps;
-    
+
     if (type.toString() === 'navigation-template') {
       // register this root
       AppRegistry.registerComponent(allProps.id, () => allProps.component)
@@ -165,8 +165,8 @@ const Renderer = Reconciler<
   removeChild,
 
   // Deferred callbacks
-  scheduleDeferredCallback() {},
-  cancelDeferredCallback() {},
+  scheduleDeferredCallback() { },
+  cancelDeferredCallback() { },
 
   ...({
     schedulePassiveEffects(fn: () => void) {
@@ -184,7 +184,7 @@ const Renderer = Reconciler<
   shouldSetTextContent() {
     return false;
   },
-  getPublicInstance() {},
+  getPublicInstance() { },
   shouldDeprioritizeSubtree() {
     return false;
   },
@@ -246,7 +246,7 @@ const Renderer = Reconciler<
 
     containerInfo.prevStack = containerInfo.stack;
   },
-  commitMount() {},
+  commitMount() { },
   // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore
   clearContainer(container?: Container) {
@@ -256,24 +256,30 @@ const Renderer = Reconciler<
   },
 });
 
+let root: OpaqueRoot | undefined
 export function render(element: React.ReactNode) {
+  DeviceEventEmitter.removeAllListeners('android_auto:ready')
+
   function callReconciler(
     element: React.ReactNode,
     containerInfo: RootContainer
   ) {
-    const root = Renderer.createContainer(containerInfo as any, false, false);
-
-    console.log("Initializing AndroidAuto module");
-    AndroidAutoModule.init();
+    if (!root) {
+      root = Renderer.createContainer(containerInfo as any, false, false);
+      console.log("Initializing AndroidAuto module");
+      AndroidAutoModule.init();
+    }
 
     Renderer.updateContainer(element as any, root, null, () => {
       AndroidAutoModule.invalidate("root");
     });
 
-    Renderer.getPublicRootInstance(root);
+    if (!root) {
+      Renderer.getPublicRootInstance(root);
+    }
   }
-  
-  AndroidAutoModule.eventEmitter.addListener("android_auto:ready", () => {
+
+  DeviceEventEmitter.addListener("android_auto:ready", () => {
     console.log("CarContext: Ready");
     const initialStack: any[] = [];
     const containerInfo = {

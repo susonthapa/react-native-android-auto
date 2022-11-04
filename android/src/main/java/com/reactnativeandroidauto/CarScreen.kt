@@ -15,7 +15,7 @@ class CarScreen(carContext: CarContext) : Screen(carContext) {
 
   fun setTemplate(template: Template?, args: ReadableMap) {
     if (template is NavigationTemplate) {
-      Log.d(TAG, "setTemplate: received navigation template with args: ${args}")
+      Log.d(TAG, "setTemplate: received navigation template with args: $args")
       val moduleName = args.getString("id")
       if (moduleName == null) {
         Log.w(
