@@ -1,13 +1,11 @@
 import { debounce, cloneDeepWith } from "lodash";
-import { NativeEventEmitter, NativeModules } from "react-native";
+import { NativeModules } from "react-native";
 
 import type { AndroidAutoTemplate } from "./types";
 
 const invalidate = debounce((screenName: string) => {
   NativeModules.CarModule.invalidate(screenName);
 }, 50);
-
-const eventEmitter = new NativeEventEmitter(NativeModules.CarModule);
 
 function prepareTemplate(name: string, template: AndroidAutoTemplate) {
   let currentIndex = 0;
@@ -37,7 +35,6 @@ function prepareTemplate(name: string, template: AndroidAutoTemplate) {
 
 export const AndroidAutoModule = {
   init() {},
-  eventEmitter,
   mapNavigate(address: string) {
     NativeModules.CarModule.mapNavigate(address);
   },

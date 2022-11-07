@@ -58,17 +58,17 @@ class AndroidAutoModule internal constructor(private val reactContext: ReactAppl
 
   @ReactMethod
   fun pushScreen(name: String?, renderMap: ReadableMap, callback: Callback?) {
-    val reactCarRenderContext = ReactCarRenderContext(name!!, callback)
-    val screen = CarScreen(carContext)
-    screenManager = screen.screenManager
-    reactCarRenderContextMap.remove(screen)
-    reactCarRenderContextMap[screen] = reactCarRenderContext
-    screen.marker = name
-    val template = parseTemplate(renderMap, reactCarRenderContext)
-    screen.setTemplate(template, renderMap)
-    carScreens[name] = screen
-    currentCarScreen = screen
     handler.post {
+      val reactCarRenderContext = ReactCarRenderContext(name!!, callback)
+      val screen = CarScreen(carContext)
+      screenManager = screen.screenManager
+      reactCarRenderContextMap.remove(screen)
+      reactCarRenderContextMap[screen] = reactCarRenderContext
+      screen.marker = name
+      val template = parseTemplate(renderMap, reactCarRenderContext)
+      screen.setTemplate(template, renderMap)
+      carScreens[name] = screen
+      currentCarScreen = screen
       screenManager!!.push(screen)
     }
   }
