@@ -6,6 +6,7 @@ import android.hardware.display.DisplayManager
 import android.os.Bundle
 import android.util.Log
 import android.view.Display
+import android.view.ViewGroup
 import androidx.car.app.AppManager
 import androidx.car.app.CarContext
 import androidx.car.app.SurfaceCallback
@@ -17,6 +18,8 @@ import com.facebook.react.ReactRootView
  * Renders the view tree into a surface using VirtualDisplay. It runs the ReactNative component registered
  */
 class VirtualRenderer(private val context: CarContext, private val moduleName: String) {
+
+  private var rootView: ReactRootView? = null
 
   init {
     context.getCarService(AppManager::class.java).setSurfaceCallback(object : SurfaceCallback {
@@ -51,11 +54,18 @@ class VirtualRenderer(private val context: CarContext, private val moduleName: S
       super.onCreate(savedInstanceState)
       val instanceManager =
         (context.applicationContext as ReactApplication).reactNativeHost.reactInstanceManager
-      val rootView = ReactRootView(context).apply {
-        startReactApplication(instanceManager, moduleName)
-        runApplication()
+      if (rootView == null) {
+        Log.d(TAG, "onCreate: rootView is null, initializing rootView")
+        rootView = ReactRootView(context).apply {
+          startReactApplication(instanceManager, moduleName)
+          runApplication()
+        }
+      } else {
+        (rootView?.parent as? ViewGroup)?.removeView(rootView)
       }
-      setContentView(rootView)
+      rootView?.let {
+        setContentView(it)
+      }
     }
   }
 
