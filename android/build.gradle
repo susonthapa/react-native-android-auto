@@ -146,7 +146,6 @@ dependencies {
   implementation(name:'HERE-sdk', ext:'aar')
   implementation "androidx.car.app:app-projected:1.1.0"
   implementation "androidx.car.app:app:1.1.0"
-  implementation "androidx.activity:activity:1.5.1"
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 // From node_modules
 }
