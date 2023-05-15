@@ -40,6 +40,12 @@ const withCarService = (config, { service = '.CarService' } = {}) => {
           'android:value': '1',
         },
       },
+      {
+        $: {
+          'android:name': 'com.google.android.gms.car.application',
+          'android:resource': '@xml/automotive_app_desc',
+        },
+      },
     ];
 
     return config;
