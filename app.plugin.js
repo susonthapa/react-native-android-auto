@@ -1,5 +1,5 @@
 const { withAndroidManifest, AndroidConfig, withDangerousMod } = require('@expo/config-plugins');
-const { writeFileSync } = require('fs');
+const { writeFileSync, mkdirSync } = require('fs');
 const { join } = require('path');
 
 const withCarService = (config, { service = '.CarService' } = {}) => {
@@ -55,16 +55,18 @@ const withAutomotiveAppDesc = (config) => {
   <uses name="template" />
 </automotiveApp>`;
 
-      const filePath = join(
+      const dirPath = join(
         config.modRequest.projectRoot,
         'android',
         'app',
         'src',
         'main',
         'res',
-        'xml',
-        'automotive_app_desc.xml'
+        'xml'
       );
+      mkdirSync(dirPath, { recursive: true }); // This will create the directories if they don't exist
+
+      const filePath = join(dirPath, 'automotive_app_desc.xml');
 
       writeFileSync(filePath, automotiveAppDescXml);
 
