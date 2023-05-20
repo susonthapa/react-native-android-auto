@@ -6,33 +6,6 @@ const withCarService = (config, { service = '.CarService' } = {}) => {
   return withAndroidManifest(config, async (config) => {
     let mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
 
-    mainApplication['service'] = [
-      {
-        $: {
-          'android:name': service,
-          'android:exported': 'true',
-        },
-        'intent-filter': [
-          {
-            'action': [
-              {
-                $: {
-                  'android:name': 'androidx.car.app.CarAppService',
-                },
-              },
-            ],
-            'category': [
-              {
-                $: {
-                  'android:name': 'androidx.car.app.category.NAVIGATION',
-                },
-              },
-            ],
-          },
-        ],
-      },
-    ];
-
     mainApplication['meta-data'] = [
       {
         $: {
